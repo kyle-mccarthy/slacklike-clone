@@ -1,0 +1,18 @@
+import type { NextApiRequest, NextApiResponse } from 'next';
+import type {
+  User as SupabaseUser,
+  Session as SupabaseSession,
+} from '@supabase/supabase-js';
+
+export type ApiHandler = (
+  req: NextApiRequest,
+  res: NextApiResponse<Record<string, any>>
+) => Promise<void>;
+
+export type User = SupabaseUser;
+export type Session = SupabaseSession;
+
+export interface AuthSession {
+  user: User;
+  session: Session;
+}
