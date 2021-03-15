@@ -1,4 +1,6 @@
-import { useQuery } from 'react-query';
+import { User } from '@app/types';
+import { useQuery, UseQueryResult } from 'react-query';
+import { NotAuthenticatedError, HttpError } from './common';
 
 const fetchCurrentUser = async (token: string) => {
   const res = await fetch('/api/me', {
@@ -10,12 +12,19 @@ const fetchCurrentUser = async (token: string) => {
     credentials: 'same-origin',
   });
 
+  if (res.status >= 400) {
+    if (res.status === 401) {
+      throw new NotAuthenticatedError(res.statusText);
+    }
+    throw new HttpError(res.status, res.statusText);
+  }
+
   const body = await res.json();
 
-  return body;
+  return body.user;
 };
 
-export const useCurrentUser = (token?: string) => {
+export const useCurrentUser = (token?: string): UseQueryResult<User> => {
   return useQuery(['user', token], () => fetchCurrentUser(token), {
     enabled: !!token,
   });

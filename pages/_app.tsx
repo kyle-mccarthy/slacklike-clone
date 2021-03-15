@@ -1,6 +1,7 @@
 import type { AppProps } from 'next/app';
 import { FC, useRef } from 'react';
 import 'tailwindcss/tailwind.css';
+import 'react-virtualized/styles.css';
 import { Auth } from '@supabase/ui';
 import supabase from '@app/utils/supabase';
 import { QueryClient, QueryClientProvider } from 'react-query';
