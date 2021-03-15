@@ -26,18 +26,30 @@ const ChatContainer: FC<Props> = ({ authenticatedUserId }) => {
       })
       .subscribe();
 
-    supabase
-      .rpc('user_conversations', { target_user_id: authenticatedUserId })
-      .then((payload) => {
-        setConversations(payload.data);
-      });
-
     return () => {
       sub.unsubscribe();
     };
+  }, []);
+
+  useEffect(() => {
+    if (authenticatedUserId) {
+      supabase
+        .rpc('user_conversations', { target_user_id: authenticatedUserId })
+        .then((payload) => {
+          setConversations(payload.data);
+        });
+    }
   }, [authenticatedUserId, setConversations]);
 
-  console.log(conversation);
+  useEffect(() => {
+    if (
+      conversation === null &&
+      Array.isArray(conversations) &&
+      conversations.length > 0
+    ) {
+      setConversation(conversations[0]?.id);
+    }
+  }, [conversation, conversations, setConversation]);
 
   return (
     <div className="flex my-auto min-h-screen max-w-screen-xl">

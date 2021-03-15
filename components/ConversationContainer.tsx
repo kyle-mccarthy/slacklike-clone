@@ -16,13 +16,30 @@ const ConversationContainer: FC<Props> = ({
   conversationId,
   userId,
   onSend,
+  messages,
+  participants: participantList,
 }) => {
-  // const [messages, setMessages] = useState([]);
+  const [participants, setParticipants] = useState<Map<string, Participant>>(
+    new Map()
+  );
+
+  useEffect(() => {
+    setParticipants(
+      [...participantList].reduce((acc, curr) => {
+        acc.set(curr.user_id, curr);
+        return acc;
+      }, new Map())
+    );
+  }, [participantList, setParticipants]);
 
   return (
     <div className="flex flex-col min-h-full">
       <div className="flex-grow">
-        <Messages conversationId={conversationId} />
+        <Messages
+          conversationId={conversationId}
+          messages={messages}
+          participants={participants}
+        />
       </div>
       <div className="h-24 flex">
         <ChatTextarea disabled={!!!conversationId} onSend={onSend} />

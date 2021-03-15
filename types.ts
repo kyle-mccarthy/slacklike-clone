@@ -26,7 +26,7 @@ export interface Conversation {
 
 export interface Message {
   content: string;
-  created_at: Date;
+  created_at: string;
   id: string;
   user_id: string;
   conversation_id: string;
