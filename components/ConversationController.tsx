@@ -1,7 +1,7 @@
 import supabase from '@app/utils/supabase';
 import { FC, useCallback, useEffect, useState } from 'react';
 import ConversationContainer from './ConversationContainer';
-import { Participant, Message } from '@app/types';
+import { Participant, Message, Conversation } from '@app/types';
 
 interface Props {
   conversationId?: string;
@@ -17,6 +17,7 @@ interface RawParticipant {
 const ConversationController: FC<Props> = ({ conversationId, userId }) => {
   const [messages, setMessages] = useState([]);
   const [participants, setParticipants] = useState([]);
+  const [conversation, setConversation] = useState<Conversation | null>(null);
 
   // setup the subscription and listen for new messages in the current
   // conversation
@@ -73,8 +74,19 @@ const ConversationController: FC<Props> = ({ conversationId, userId }) => {
           }));
           setParticipants(data);
         });
+
+      supabase
+        .from('conversations')
+        .select()
+        .eq('id', conversationId)
+        .then((res) => {
+          const data = res.data;
+          if (Array.isArray(data) && data.length > 0) {
+            setConversation(data[0]);
+          }
+        });
     }
-  }, [conversationId, setMessages, setParticipants]);
+  }, [conversationId, setMessages, setParticipants, setConversation]);
 
   // handle sending a new message for the current user and conversation, _don't_
   // automatically append the message -- our subscription will handle this for
@@ -110,6 +122,7 @@ const ConversationController: FC<Props> = ({ conversationId, userId }) => {
       messages={messages}
       onSend={handleSend}
       participants={participants}
+      conversation={conversation}
     />
   );
 };

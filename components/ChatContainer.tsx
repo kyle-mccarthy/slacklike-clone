@@ -54,7 +54,7 @@ const ChatContainer: FC<Props> = ({ authenticatedUserId }) => {
   return (
     <div className="flex my-auto min-h-screen max-w-screen-xl">
       <div className="bg-gray-900 bg-opacity-50 w-1/4">
-        <div className="p-6">
+        <div>
           {Array.isArray(conversations) && (
             <ConversationList
               conversations={conversations}
@@ -63,7 +63,7 @@ const ChatContainer: FC<Props> = ({ authenticatedUserId }) => {
           )}
         </div>
       </div>
-      <div className="p-6 bg-gray-900 bg-opacity-25 w-3/4">
+      <div className="bg-gray-900 bg-opacity-25 w-3/4">
         <ConversationController
           conversationId={conversation}
           userId={authenticatedUserId}

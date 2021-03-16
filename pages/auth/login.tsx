@@ -1,12 +1,10 @@
-import Head from 'next/head';
-import { NextPage } from 'next';
+import Container from '@app/components/Container';
 import supabase from '@app/utils/supabase';
 import { Auth } from '@supabase/ui';
-import Grid from '@app/components/Grid';
-import Container from '@app/components/Container';
-import { useQuery } from 'react-query';
-import { Session } from '@app/types';
+import { NextPage } from 'next';
+import Head from 'next/head';
 import { useEffect } from 'react';
+import { useQuery } from 'react-query';
 
 const fetchCurrentUser = async (token: string) => {
   const res = await fetch('/api/me', {

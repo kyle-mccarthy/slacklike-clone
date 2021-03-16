@@ -53,24 +53,28 @@ interface Props {
 const ConversationList: FC<Props> = ({ conversations, setConversation }) => {
   return (
     <div>
-      <h3 className="text-lg uppercase font-semibold tracking-wide text-gray-300 border-b border-white border-opacity-25 mb-3">
-        Conversations
-      </h3>
-      <ul>
-        {conversations.map((c) => (
-          <ListItem
-            key={c.id}
-            conversation={c}
-            setConversation={setConversation}
-          >
-            {c.name}
-          </ListItem>
-        ))}
+      <div className="h-16 flex items-center border-b border-white border-opacity-10 mb-4 pr-6 pl-6">
+        <h3 className="text-lg uppercase font-semibold tracking-wide text-gray-300">
+          Conversations
+        </h3>
+      </div>
+      <div className="pr-6 pl-6 pb-6">
+        <ul>
+          {conversations.map((c) => (
+            <ListItem
+              key={c.id}
+              conversation={c}
+              setConversation={setConversation}
+            >
+              {c.name}
+            </ListItem>
+          ))}
 
-        <StyledListItem>
-          <FiPlusSquare className="inline" /> New Conversation
-        </StyledListItem>
-      </ul>
+          <StyledListItem>
+            <FiPlusSquare className="inline" /> New Conversation
+          </StyledListItem>
+        </ul>
+      </div>
     </div>
   );
 };
