@@ -1,7 +1,6 @@
-import { FC, useEffect } from 'react';
-import supabase from '@app/utils/supabase';
-import { Conversation, Message, Participant } from '@app/types';
-import { List, AutoSizer } from 'react-virtualized';
+import { Message, Participant } from '@app/types';
+import { FC } from 'react';
+import { Virtuoso } from 'react-virtuoso';
 import SingleMessage from './SingleMessage';
 
 interface Props {
@@ -10,19 +9,29 @@ interface Props {
   messages: Message[];
 }
 
-const Messages: FC<Props> = ({ conversationId, messages, participants }) => {
-  useEffect(() => {}, []);
-
+const Messages: FC<Props> = ({ messages, participants }) => {
+  if (messages.length === 0) {
+    return null;
+  }
   return (
-    <div>
-      {messages.map((m) => (
-        <SingleMessage
-          key={m.id}
-          message={m}
-          participant={participants.get(m.user_id)}
-        />
-      ))}
-    </div>
+    <Virtuoso
+      className="flex-grow"
+      data={messages}
+      itemContent={(_index, m) => {
+        if (!m) {
+          return null;
+        }
+
+        return (
+          <SingleMessage
+            message={m}
+            participant={participants.get(m.user_id)}
+          />
+        );
+      }}
+      followOutput="smooth"
+      initialTopMostItemIndex={messages.length}
+    />
   );
 };
 

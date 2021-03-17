@@ -5,17 +5,11 @@ import { useCurrentUser } from '@app/utils/queries/user';
 import ChatContainer from '@app/components/ChatContainer';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
+import supabase from '@app/utils/supabase';
 
 const Page: NextPage = () => {
   const { session } = Auth.useUser();
   const { data, error, ...rest } = useCurrentUser(session?.access_token);
-  const router = useRouter();
-
-  // useEffect(() => {
-  //   if (error) {
-  //     void router.push('/auth/login');
-  //   }
-  // }, [error, router]);
 
   return (
     <div className="container mx-auto max-w-screen-xl">

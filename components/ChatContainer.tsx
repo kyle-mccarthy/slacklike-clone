@@ -19,26 +19,21 @@ const ChatContainer: FC<Props> = ({ authenticatedUserId }) => {
   const [conversation, setConversation] = useState<null | string>(null);
 
   useEffect(() => {
-    const sub = supabase
-      .from('conversations')
-      .on('*', (payload) => {
-        console.log(payload);
-      })
-      .subscribe();
+    let unmounted = false;
 
-    return () => {
-      sub.unsubscribe();
-    };
-  }, []);
-
-  useEffect(() => {
     if (authenticatedUserId) {
       supabase
         .rpc('user_conversations', { target_user_id: authenticatedUserId })
         .then((payload) => {
-          setConversations(payload.data);
+          if (!unmounted) {
+            setConversations(payload.data);
+          }
         });
     }
+
+    return () => {
+      unmounted = true;
+    };
   }, [authenticatedUserId, setConversations]);
 
   useEffect(() => {
@@ -52,7 +47,7 @@ const ChatContainer: FC<Props> = ({ authenticatedUserId }) => {
   }, [conversation, conversations, setConversation]);
 
   return (
-    <div className="flex my-auto min-h-screen max-w-screen-xl">
+    <div className="flex my-auto min-h-screen max-h-screen max-w-screen-xl">
       <div className="bg-gray-900 bg-opacity-50 w-1/4">
         <div>
           {Array.isArray(conversations) && (

@@ -1,9 +1,8 @@
-import { FC, useEffect, useCallback, KeyboardEvent, useState } from 'react';
-import supabase from '@app/utils/supabase';
 import { Conversation, Message, Participant } from '@app/types';
-import Messages from './Messages';
+import { FC, useEffect, useState } from 'react';
 import ChatTextarea from './ChatTextarea';
 import ConversationHeader from './ConversationHeader';
+import Messages from './Messages';
 
 interface Props {
   conversationId?: string;
@@ -12,6 +11,7 @@ interface Props {
   participants: Participant[];
   onSend: (message: string) => void;
   conversation: Conversation;
+  setConversationTopic: (topic: string) => void;
 }
 
 const ConversationContainer: FC<Props> = ({
@@ -21,6 +21,7 @@ const ConversationContainer: FC<Props> = ({
   messages,
   participants: participantList,
   conversation,
+  setConversationTopic,
 }) => {
   const [participants, setParticipants] = useState<Map<string, Participant>>(
     new Map()
@@ -36,11 +37,14 @@ const ConversationContainer: FC<Props> = ({
   }, [participantList, setParticipants]);
 
   return (
-    <div className="flex flex-col min-h-full">
-      <div>
-        <ConversationHeader conversation={conversation} />
+    <div className="flex flex-col min-h-full max-h-full">
+      <div className="h-16 mb-4">
+        <ConversationHeader
+          conversation={conversation}
+          setConversationTopic={setConversationTopic}
+        />
       </div>
-      <div className="p-6 pt-0 flex-grow">
+      <div className="flex-grow flex flex-col">
         <Messages
           conversationId={conversationId}
           messages={messages}

@@ -27,6 +27,7 @@ const ConversationController: FC<Props> = ({ conversationId, userId }) => {
     };
 
     if (conversationId) {
+      console.log('subscribing', conversationId);
       const sub = supabase
         .from(`messages:conversation_id=eq.${conversationId}`)
         .on('INSERT', (payload) => {
@@ -36,15 +37,24 @@ const ConversationController: FC<Props> = ({ conversationId, userId }) => {
         })
         .subscribe();
 
+      const convoSub = supabase
+        .from(`conversations:id=eq.${conversationId}`)
+        .on('UPDATE', (payload) => {
+          setConversation(payload.new);
+        })
+        .subscribe();
+
       destory = () => {
+        console.log('unsubbing');
         sub.unsubscribe();
+        convoSub.unsubscribe();
       };
     }
 
     return () => {
       destory();
     };
-  }, [conversationId]);
+  }, [conversationId, setMessages, setConversation]);
 
   // for the current conversation, get the previous 100 messages as well as the
   // current participants
@@ -58,7 +68,9 @@ const ConversationController: FC<Props> = ({ conversationId, userId }) => {
         .limit(100)
         .then((res) => {
           const data: Message[] = res.data;
-          setMessages(data);
+          if (Array.isArray(data)) {
+            setMessages(data.reverse());
+          }
         });
 
       supabase
@@ -115,6 +127,20 @@ const ConversationController: FC<Props> = ({ conversationId, userId }) => {
     [conversationId, userId]
   );
 
+  const setConversationTopic = useCallback(
+    async (topic: string) => {
+      // we are subscribed to this so we can throw the promise away, however it
+      // appears that supabase uses a "promise like" value, and it doesn't do
+      // anything unless awaited
+      supabase
+        .from('conversations')
+        .update({ subject: topic })
+        .match({ id: conversationId })
+        .then((_) => {});
+    },
+    [conversationId]
+  );
+
   return (
     <ConversationContainer
       userId={userId}
@@ -123,6 +149,7 @@ const ConversationController: FC<Props> = ({ conversationId, userId }) => {
       onSend={handleSend}
       participants={participants}
       conversation={conversation}
+      setConversationTopic={setConversationTopic}
     />
   );
 };
