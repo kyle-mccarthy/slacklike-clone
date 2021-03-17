@@ -22,8 +22,6 @@ const ChatController: FC<Props> = ({ authenticatedUserId }) => {
 
   const createConversation = useCallback(
     (name: string) => {
-      console.log('will create conversation', name, authenticatedUserId);
-
       supabase
         .from('conversations')
         .insert({
@@ -42,10 +40,8 @@ const ChatController: FC<Props> = ({ authenticatedUserId }) => {
   );
 
   const logout = useCallback(() => {
-    supabase.auth.signOut().then(() => {
-      void goTo('/auth/login');
-    });
-  }, [goTo]);
+    supabase.auth.signOut();
+  }, []);
 
   useEffect(() => {
     let destroyed = false;
@@ -66,7 +62,6 @@ const ChatController: FC<Props> = ({ authenticatedUserId }) => {
   }, [authenticatedUserId, setConversations]);
 
   useEffect(() => {
-    console.log('subbing to insert on conversation');
     let destory = () => {
       /* noop */
     };

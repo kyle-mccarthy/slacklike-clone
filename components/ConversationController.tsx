@@ -28,7 +28,6 @@ const ConversationController: FC<Props> = ({ conversationId, userId }) => {
     };
 
     if (conversationId) {
-      console.log('subscribing', conversationId);
       const sub = supabase
         .from(`messages:conversation_id=eq.${conversationId}`)
         .on('INSERT', (payload) => {
@@ -64,6 +63,8 @@ const ConversationController: FC<Props> = ({ conversationId, userId }) => {
   // for the current conversation, get the previous 100 messages as well as the
   // current participants
   useEffect(() => {
+    let didDestroy = false;
+
     if (conversationId) {
       supabase
         .from(`messages`)
@@ -72,9 +73,11 @@ const ConversationController: FC<Props> = ({ conversationId, userId }) => {
         .order('created_at', { ascending: false })
         .limit(100)
         .then((res) => {
-          const data: Message[] = res.data;
-          if (Array.isArray(data)) {
-            setMessages(data.reverse());
+          if (!didDestroy) {
+            const data: Message[] = res.data;
+            if (Array.isArray(data)) {
+              setMessages(data.reverse());
+            }
           }
         });
 
@@ -83,13 +86,15 @@ const ConversationController: FC<Props> = ({ conversationId, userId }) => {
         .select('conversation_id, user_id, users(display_name)')
         .eq('conversation_id', conversationId)
         .then((res) => {
-          const rawParticipants: RawParticipant[] = res.data;
-          const data: Participant[] = rawParticipants.map((r) => ({
-            user_id: r.user_id,
-            conversation_id: r.conversation_id,
-            display_name: r.users.display_name,
-          }));
-          setParticipants(data);
+          if (!didDestroy) {
+            const rawParticipants: RawParticipant[] = res.data;
+            const data: Participant[] = rawParticipants.map((r) => ({
+              user_id: r.user_id,
+              conversation_id: r.conversation_id,
+              display_name: r.users.display_name,
+            }));
+            setParticipants(data);
+          }
         });
 
       supabase
@@ -97,12 +102,18 @@ const ConversationController: FC<Props> = ({ conversationId, userId }) => {
         .select()
         .eq('id', conversationId)
         .then((res) => {
-          const data = res.data;
-          if (Array.isArray(data) && data.length > 0) {
-            setConversation(data[0]);
+          if (!didDestroy) {
+            const data = res.data;
+            if (Array.isArray(data) && data.length > 0) {
+              setConversation(data[0]);
+            }
           }
         });
     }
+
+    return () => {
+      didDestroy = true;
+    };
   }, [conversationId, setMessages, setParticipants, setConversation]);
 
   // handle sending a new message for the current user and conversation, _don't_
