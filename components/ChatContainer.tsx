@@ -1,7 +1,7 @@
-import { FC, useEffect, useState } from 'react';
-import supabase from '@app/utils/supabase';
-import ConversationList from './ConversationList';
+import { FC } from 'react';
+import { HiLogout } from 'react-icons/hi';
 import ConversationController from './ConversationController';
+import ConversationList from './ConversationList';
 
 interface Conversation {
   id: string;
@@ -12,50 +12,39 @@ interface Conversation {
 
 interface Props {
   authenticatedUserId: string;
+  createConversation: (name: string) => void;
+  conversations: Conversation[];
+  setConversations: (arr: Conversation[]) => void;
+  conversation: string | null;
+  setConversation: (id: string) => void;
+  logout: () => void;
 }
 
-const ChatContainer: FC<Props> = ({ authenticatedUserId }) => {
-  const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [conversation, setConversation] = useState<null | string>(null);
-
-  useEffect(() => {
-    let unmounted = false;
-
-    if (authenticatedUserId) {
-      supabase
-        .rpc('user_conversations', { target_user_id: authenticatedUserId })
-        .then((payload) => {
-          if (!unmounted) {
-            setConversations(payload.data);
-          }
-        });
-    }
-
-    return () => {
-      unmounted = true;
-    };
-  }, [authenticatedUserId, setConversations]);
-
-  useEffect(() => {
-    if (
-      conversation === null &&
-      Array.isArray(conversations) &&
-      conversations.length > 0
-    ) {
-      setConversation(conversations[0]?.id);
-    }
-  }, [conversation, conversations, setConversation]);
-
+const ChatContainer: FC<Props> = ({
+  authenticatedUserId,
+  conversations,
+  conversation,
+  setConversation,
+  createConversation,
+  logout,
+}) => {
   return (
     <div className="flex my-auto min-h-screen max-h-screen max-w-screen-xl">
-      <div className="bg-gray-900 bg-opacity-50 w-1/4">
+      <div className="bg-gray-900 bg-opacity-50 w-1/4 flex flex-col">
         <div>
           {Array.isArray(conversations) && (
             <ConversationList
               conversations={conversations}
               setConversation={setConversation}
+              createConversation={createConversation}
             />
           )}
+        </div>
+        <div className="mt-auto pl-6 pr-6 mb-3">
+          <span className="flex items-center cursor-pointer" onClick={logout}>
+            <span className="text-sm uppercase">Logout</span>{' '}
+            <HiLogout className="inline ml-2" />
+          </span>
         </div>
       </div>
       <div className="bg-gray-900 bg-opacity-25 w-3/4">

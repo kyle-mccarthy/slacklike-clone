@@ -22,6 +22,7 @@ const ConversationController: FC<Props> = ({ conversationId, userId }) => {
   // setup the subscription and listen for new messages in the current
   // conversation
   useEffect(() => {
+    let didDestroy = false;
     let destory = () => {
       /* noop */
     };
@@ -31,21 +32,25 @@ const ConversationController: FC<Props> = ({ conversationId, userId }) => {
       const sub = supabase
         .from(`messages:conversation_id=eq.${conversationId}`)
         .on('INSERT', (payload) => {
-          setMessages((prev) => {
-            return [...prev, payload.new];
-          });
+          if (!didDestroy) {
+            setMessages((prev) => {
+              return [...prev, payload.new];
+            });
+          }
         })
         .subscribe();
 
       const convoSub = supabase
         .from(`conversations:id=eq.${conversationId}`)
         .on('UPDATE', (payload) => {
-          setConversation(payload.new);
+          if (!didDestroy) {
+            setConversation(payload.new);
+          }
         })
         .subscribe();
 
       destory = () => {
-        console.log('unsubbing');
+        didDestroy = true;
         sub.unsubscribe();
         convoSub.unsubscribe();
       };

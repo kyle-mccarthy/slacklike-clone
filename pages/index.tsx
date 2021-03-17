@@ -1,15 +1,12 @@
-import Head from 'next/head';
-import { NextPage } from 'next';
-import { Auth } from '@supabase/ui';
+import ChatController from '@app/components/ChatController';
 import { useCurrentUser } from '@app/utils/queries/user';
-import ChatContainer from '@app/components/ChatContainer';
-import { useEffect } from 'react';
-import { useRouter } from 'next/router';
-import supabase from '@app/utils/supabase';
+import { Auth } from '@supabase/ui';
+import { NextPage } from 'next';
+import Head from 'next/head';
 
 const Page: NextPage = () => {
   const { session } = Auth.useUser();
-  const { data, error, ...rest } = useCurrentUser(session?.access_token);
+  const { data, error } = useCurrentUser(session?.access_token);
 
   return (
     <div className="container mx-auto max-w-screen-xl">
@@ -17,7 +14,7 @@ const Page: NextPage = () => {
         <title>Chat</title>
       </Head>
 
-      <ChatContainer authenticatedUserId={data?.id} />
+      <ChatController authenticatedUserId={data?.id} />
     </div>
   );
 };

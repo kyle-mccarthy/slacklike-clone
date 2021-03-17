@@ -61,8 +61,6 @@ const Page: NextPage = () => {
         <title>Login</title>
       </Head>
 
-      <p className="font-sans">Typography</p>
-
       <div className="w-3/5 mx-auto my-auto">
         <Auth supabaseClient={supabase} />
       </div>

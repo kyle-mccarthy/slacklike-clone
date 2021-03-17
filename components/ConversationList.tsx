@@ -1,7 +1,7 @@
 import { Conversation } from '@app/types';
 import { FC, useCallback, HTMLProps } from 'react';
 import { HiHashtag } from 'react-icons/hi';
-import { FiPlusSquare } from 'react-icons/fi';
+import CreateConversation from './CreateConversation';
 
 // List item with the styles
 const StyledListItem: FC<HTMLProps<HTMLLIElement>> = ({
@@ -46,11 +46,16 @@ const ListItem: FC<ItemProps> = ({ conversation, setConversation }) => {
 interface Props {
   conversations: Conversation[];
   setConversation: (id: string) => void;
+  createConversation: (name: string) => void;
 }
 
 // Displays the conversations in a list, handles selecting conversations as well
 // as creating new conversations
-const ConversationList: FC<Props> = ({ conversations, setConversation }) => {
+const ConversationList: FC<Props> = ({
+  conversations,
+  setConversation,
+  createConversation,
+}) => {
   return (
     <div>
       <div className="h-16 flex items-center border-b border-white border-opacity-10 mb-4 pr-6 pl-6">
@@ -71,7 +76,7 @@ const ConversationList: FC<Props> = ({ conversations, setConversation }) => {
           ))}
 
           <StyledListItem>
-            <FiPlusSquare className="inline" /> New Conversation
+            <CreateConversation createConversation={createConversation} />
           </StyledListItem>
         </ul>
       </div>
